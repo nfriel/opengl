@@ -1,44 +1,53 @@
-#define GL_SILENCE_DEPRECATION
+#include <glad/glad.h>
+#include <glfw/glfw3.h>
 
-#include "glad/glad.h"
-#include "glfw/glfw3.h"
 #include <iostream>
 
 int main(void)
 {
     glfwInit();
-
-    // Versions of OpenGL required (or is it versions of GLFW?)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    // Necessary on mac
+    // Necessary for some reason on mac
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    // Prevent window resizing
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-    GLFWwindow *window = glfwCreateWindow(600, 400, "OpenGL", nullptr, nullptr);
-    if (window == nullptr) {
+    GLFWwindow *window = glfwCreateWindow(800, 600, "OpenGL", NULL, NULL);
+    if (window == NULL) {
         std::cout << "glfwCreateWindow error\n";
+        std::cout << glfwGetError(NULL) << std::endl;
         glfwTerminate();
         return -1;
     }
 
     glfwMakeContextCurrent(window);
 
+    // Initialize glad before calling any opengl functions
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cout <<"gladLoadGLLoader error\n";
+        std::cout << "gladLoadGLLoader error\n";
         glfwTerminate();
         return -1;
     }
 
-    // Main loop
+    glViewport(0, 0, 800, 600);
+
+
+    // Verticies representing a triangle
+    float vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.0f,  0.5f, 0.0f
+    };
+
+    // Vertex buffer object
+    // Used to send large amounts of vertex data to GPU
+    unsigned int buffer;
+    glGenBuffers(1, &buffer);
+
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    glfwTerminate();
 }
